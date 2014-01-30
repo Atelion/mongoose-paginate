@@ -8,6 +8,8 @@ var vows = require('vows')
   , mongoose = require('mongoose')
   , Schema = mongoose.Schema
   , ObjectId = Schema.ObjectId
+  , Promise = mongoose.Promise
+  , events = require('events')
     paginate = require('../lib/mongoose-paginate');
 
 /**
@@ -109,6 +111,35 @@ vows.describe('pagination module basic test').addBatch({
       assert.equal(error, null);
     },
     'results.length should be 10, and the first result should contain the correct index #(11)':function(error, pageCount, results) {
+      assert.equal(results.length, 10);
+    },
+    'the first result should contain the correct index #(11)':function(error, pageCount, results) {
+      assert.equal(results[0].title, 'Item #11');
+    },
+    'the column entry should be undefined':function(error, pageCount, results) {
+      assert.equal(typeof(results[0].entry), 'undefined');
+    }
+  }
+}).addBatch({
+  'when paginating BlogEntry querying for all documents, with page 2, 10 per page with a promise':{
+    topic:function(){
+      var mongoosePromise = BlogEntry.paginate({}, 2, 10, undefined, {columns: 'title'});
+      var promise = new(events.EventEmitter);
+
+      mongoosePromise.addBack(function(error, pageCount, results) {
+        if (error) { promise.emit('error', error) }
+        else { promise.emit('success', pageCount, results) }
+      });
+
+      return promise;
+    },
+    'there should be no errors':function(error, pageCount, results){
+      assert.equal(error, null);
+    },
+    'pageCount should be 10':function(error, pageCount, results) {
+      assert.equal(pageCount, 10);
+    },
+    'results.length should be 10':function(error, pageCount, results) {
       assert.equal(results.length, 10);
     },
     'the first result should contain the correct index #(11)':function(error, pageCount, results) {
