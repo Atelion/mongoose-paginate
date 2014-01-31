@@ -118,6 +118,9 @@ vows.describe('pagination module basic test').addBatch({
     },
     'the column entry should be undefined':function(error, pageCount, results) {
       assert.equal(typeof(results[0].entry), 'undefined');
+    },
+    'totalCount should be 100':function(error, pageCount, results, totalCount) {
+      assert.equal(totalCount, 100);
     }
   }
 }).addBatch({
@@ -126,9 +129,9 @@ vows.describe('pagination module basic test').addBatch({
       var mongoosePromise = BlogEntry.paginate({}, 2, 10, undefined, {columns: 'title'});
       var promise = new(events.EventEmitter);
 
-      mongoosePromise.addBack(function(error, pageCount, results) {
+      mongoosePromise.addBack(function(error, pageCount, results, totalCount) {
         if (error) { promise.emit('error', error) }
-        else { promise.emit('success', pageCount, results) }
+        else { promise.emit('success', pageCount, results, totalCount) }
       });
 
       return promise;
@@ -147,6 +150,9 @@ vows.describe('pagination module basic test').addBatch({
     },
     'the column entry should be undefined':function(error, pageCount, results) {
       assert.equal(typeof(results[0].entry), 'undefined');
+    },
+    'totalCount should be 100':function(error, pageCount, results, totalCount) {
+      assert.equal(totalCount, 100);
     }
   }
 }).addBatch({
