@@ -10,7 +10,7 @@ var vows = require('vows')
   , ObjectId = Schema.ObjectId
   , Promise = mongoose.Promise
   , events = require('events')
-    paginate = require('../lib/mongoose-paginate');
+  , paginate = require('../lib/mongoose-paginate')(mongoose);
 
 /**
  * connect to MongoDB with Mongoose
@@ -88,8 +88,8 @@ vows.describe('pagination module basic test').addBatch({
     topic:function(){
       return paginate;
     },
-    'there should be no errors and paginate should be an object':function(topic) {
-      assert.equal(typeof(topic), 'object');
+    'there should be no errors and paginate should be a function':function(topic) {
+      assert.equal(typeof(topic), 'function');
     }
   }
 }).addBatch({
